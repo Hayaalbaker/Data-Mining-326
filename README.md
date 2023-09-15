@@ -4,7 +4,7 @@ Depression and anxiety, both mentally and physically draining, are prevalent men
 Students experiencing depression and anxiety often struggle with academic tasks, studying, and interpersonal relationships with peers and teachers. These psychological challenges have a detrimental effect on both academic performance and social behavior. Thus, our project aims to explore trends, patterns, and factors to predict the likelihood and severity of depression among university students.  Our class label will be the probability that indicates whether university student is likely to develop depression or not.
 
 
-Sara  | 443203107
+Sara  Alzayed | 443203107
 
 Haya Albaker  |  443202868
 
