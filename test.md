@@ -19,7 +19,7 @@ We want to use statistical techniques to seek trends that can predict any early 
 
 **Source of the dataset:** Kaggle
 
-**Dataset Link:** <https://www.kaggle.com/datasets/shahzadahmad0402/depression-and-anxiety-data?resource=download>
+**Dataset Link:** https://www.kaggle.com/datasets/shahzadahmad0402/depression-and-anxiety-data?resource=download
 
 **Number of Attributes:** 19
 
