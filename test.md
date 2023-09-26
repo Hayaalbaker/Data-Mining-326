@@ -27,7 +27,7 @@ We want to use statistical techniques to seek trends that can predict any early 
 
 **Number of Objects:** 783
 
-### Table 1:
+### Table :
 
 | **Attribute Name**  | **Description**             | **Data Type**       | **Possible Values**                               |
 |---------------------|-----------------------------|---------------------|----------------------------------------------------|
