@@ -32,7 +32,7 @@ We want to use statistical techniques to seek trends that can predict any early 
 | **Attribute Name**  | **Description**             | **Data Type**       | **Possible Values**                               |
 |---------------------|-----------------------------|---------------------|----------------------------------------------------|
 |ID                   |student id                   |Nominal              |3 values                                            |
-|school_year          |student current year         |Numeric              |1-4                                                 |
+|school_year          |student current year         |Ordinal              |1-4                                                 |
 |Age                  |student age                  |Numeric              |18-24                                               |
 |Gender               |student gender               |Binary               |female/male                                         |
 |BMI                  |body mass index              |Numerical            |9-50                                                |
