@@ -1,0 +1,261 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+# random Sample of 20 rows from our dataset :
+
+```{r}
+getwd()
+setwd("/Users/sara/downloads")
+dataset=read.csv('depression_anxiety_data.csv')
+sample=sample_n(dataset,20)
+print(sample)
+```
+###############################################################################
+
+# statistical measures on our dataset before removing outliers :
+
+```{r}
+summary(dataset$school_year)
+summary(dataset$age)
+summary(dataset$bmi)
+summary(dataset$phq_score)
+summary(dataset$gad_score)
+summary(dataset$epworth_score)
+```
+# statistical measures on our dataset after removing outliers
+
+```{r}
+dataset= dataset[-Find_outlier,]
+dataset= dataset[-Find_outlier2,]
+
+summary(dataset$school_year)
+summary(dataset$age)
+summary(dataset$bmi)
+summary(dataset$phq_score)
+summary(dataset$gad_score)
+summary(dataset$epworth_score)
+```
+# mainly , not much values have been affected which implies that there were not much outliers in this dataset.
+# and even the affected values were affected slightly .
+# as we can see the values of 'mean' have all been affected , which makes us deduct that mean is alwayes affected by outliers.
+
+###############################################################################
+
+# charts :
+
+# 1) pie charts :
+
+# a) gender :
+
+# we can see that this dataset has a similar amount of males to females 
+```{r}
+tab <- dataset$gender%>% table()
+precentages <- tab %>% prop.table() %>% round(3) * 100 
+txt <- paste0(names(tab), '\n', precentages, '%') 
+pie(tab, labels=txt)
+```
+
+# b) school year :
+
+# we can see that the majority of students are in their 1st year , while the least are in their 3rd year. 
+
+```{r}
+tab <- dataset$school_year%>% table()
+precentages <- tab %>% prop.table() %>% round(3) * 100 
+txt <- paste0(names(tab), '\n', precentages, '%') 
+pie(tab, labels=txt)
+```
+
+# 2) box plots :
+
+# a) age :
+
+# we can see that the students age ranges are close to each other , also there are some outliers (older students)
+
+```{r}
+boxplot(dataset$age)
+```
+
+# b) phq score :
+
+# we can see that the phq scores have outliers that need to be smoothed out
+
+```{r}
+boxplot(dataset$phq_score)
+```
+
+# c) gad score score :
+
+# we can see that the gad scores have outliers that need to be smoothed out
+
+```{r}
+boxplot(dataset$gad_score)
+```
+
+
+# d) epworth  score :
+
+# we can see that the epworth scores have outliers that need to be smoothed out
+
+```{r}
+boxplot(depression_anxiety_data$epworth_score)
+```
+
+# 3) histogram :
+
+# a) bmi :
+
+# we noticed that the most students have a bmi from 20 to 30. As for the rest of the students thier bmi are lower than 20 
+
+```{r}
+bmi <- dataset$bmi
+hist(bmi)
+```
+
+# b) age :
+
+# we noticed that the most students are of ages 18 to 22. no students are under 18 and only some are above 22.
+
+```{r}
+age <- dataset$age
+hist(age)
+```
+
+# 4) scatter plots :
+
+# a) bmi and phq score  :
+
+# This scatterplot helps us to determine whether the bmi and phq score are corelated to each other or not, it shows that the two attributes are not corelated and has no proportional relationship.
+
+```{r}
+xyplot(phq_score~bmi,data = dataset)
+```
+
+# b) bmi and gad score  :
+
+# This scatterplot helps us to determine whether the bmi and gad score are corelated to each other or not, it shows that the two attributes are not corelated and has no proportional relationship.
+
+
+```{r}
+xyplot(gad_score~bmi,data = dataset)
+```
+
+# c) bmi and epworth score  :
+
+# This scatterplot helps us to determine whether the bmi and epworth score are corelated to each other or not, it shows that the two attributes are not corelated and has no proportional relationship.
+
+```{r}
+xyplot(epworth_score~bmi,data = dataset)
+
+```
+
+###############################################################################
+
+##the total null values in the dataset is 41
+
+```{r}
+is.na(dataset)
+sum(is.na(dataset))
+```
+
+
+###Detect Outlier
+
+```{r}
+
+install.packages("outliers")
+library(outliers)
+
+Outage = outlier(dataset$age, logical =TRUE)
+sum(Outage)
+Find_outlier = which(Outage ==TRUE, arr.ind = TRUE)
+Outage
+Find_outlier
+```
+
+##we have outliers in 252 and 614
+
+```{r}
+
+Outbmi= outlier(dataset$bmi, logical =TRUE)
+sum(Outbmi)
+Find_outlier2 = which(Outbmi==TRUE, arr.ind = TRUE)
+Outbmi
+Find_outlier2
+```
+#we have outlier in 71
+
+#delet outlier
+
+```{r}
+
+dataset= dataset[-Find_outlier,]
+dataset= dataset[-Find_outlier2,]
+
+```
+
+
+##Data Trasformation (Encoding the binary data type to 0,1)
+```{r}
+
+dataset$depressiveness = factor (dataset$depressiveness, levels = c(TRUE,FALSE), labels=c(1,0))
+print(dataset)
+dataset$suicidal = factor (dataset$suicidal, levels = c(TRUE,FALSE), labels=c(1,0))
+print(dataset)
+dataset$depression_diagnosis = factor (dataset$depression_diagnosis, levels = c(TRUE,FALSE), labels=c(1,0))
+print(dataset)
+dataset$depression_treatment = factor (dataset$depression_treatment, levels = c(TRUE,FALSE), labels=c(1,0))
+print(dataset)
+dataset$anxiousness = factor (dataset$anxiousness, levels = c(TRUE,FALSE), labels=c(1,0))
+print(dataset)
+dataset$anxiety_diagnosis = factor (dataset$anxiety_diagnosis, levels = c(TRUE,FALSE), labels=c(1,0))
+print(dataset)
+dataset$anxiety_treatment = factor (dataset$anxiety_treatment, levels = c(TRUE,FALSE), labels=c(1,0))
+print(dataset)
+dataset$sleepiness = factor (dataset$sleepiness, levels = c(TRUE,FALSE), labels=c(1,0))
+print(dataset)
+
+
+```
+
+### Data Transformation (Discretization the values based on fixed set of predetermined criteria)
+
+#1- bmi discretizatio (indicate high body fatness)
+```{r}
+
+breaks <- c(18,18.4,24.9,29.9,34.9,39.9,100)
+dataset$bmi= cut(dataset$bmi, breaks = breaks)
+print(dataset)
+```
+
+
+#2- phq test score discretizatio(Depression Test Questionnaire)
+```{r}
+
+breaks <- c(0,4,9,14,19,27)
+dataset$phq_score= cut(dataset$phq_score, breaks = breaks)
+print(dataset)
+```
+
+
+#3- gad test score discretization(Generalised Anxiety Disorder Assessment)
+```{r}
+
+breaks <- c(0,4,9,14,21)
+dataset$gad_score= cut(dataset$gad_score, breaks = breaks)
+print(dataset)
+
+```
+
+#4- Epworth test score discretizatio (Sleepiness Scale)
+```{r}
+
+breaks <- c(0,10,14,17,24)
+dataset$epworth_score= cut(dataset$epworth_score, breaks = breaks)
+print(dataset)
+```
+
+
+
