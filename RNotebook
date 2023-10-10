@@ -1,0 +1,295 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+# random Sample of 20 rows from our dataset :
+
+
+
+```{r}
+
+sample=sample_n(depression_anxiety_data,20)
+
+print(sample)
+
+```
+
+###############################################################################
+
+
+
+# statistical measures on our dataset before removing outliers :
+
+
+
+```{r}
+
+summary(depression_anxiety_data$school_year)
+
+summary(depression_anxiety_data$age)
+
+summary(depression_anxiety_data$bmi)
+
+summary(depression_anxiety_data$phq_score)
+
+summary(depression_anxiety_data$gad_score)
+
+summary(depression_anxiety_data$epworth_score)
+
+```
+
+# statistical measures on our dataset after removing outliers
+
+
+
+```{r}
+
+depression_anxiety_data= depression_anxiety_data[-Find_outlier,]
+
+depression_anxiety_data= depression_anxiety_data[-Find_outlier2,]
+
+
+
+summary(depression_anxiety_data$school_year)
+
+summary(depression_anxiety_data$age)
+
+summary(depression_anxiety_data$bmi)
+
+summary(depression_anxiety_data$phq_score)
+
+summary(depression_anxiety_data$gad_score)
+
+summary(depression_anxiety_data$epworth_score)
+
+```
+
+# mainly , not much values have been affected which implies that there were not much outliers in this dataset.
+
+# and even the affected values were affected slightly .
+
+# as we can see the values of 'mean' have all been affected , which makes us deduct that mean is alwayes affected by outliers.
+
+
+
+###############################################################################
+
+
+
+# charts :
+
+
+
+# 1) pie charts :
+
+
+
+# a) gender :
+
+
+
+# we can see that this dataset has a similar amount of males to females 
+
+```{r}
+
+tab <- depression_anxiety_data2$gender%>% table()
+
+precentages <- tab %>% prop.table() %>% round(3) * 100 
+
+txt <- paste0(names(tab), '\n', precentages, '%') 
+
+pie(tab, labels=txt)
+
+```
+
+
+
+# b) school year :
+
+
+
+# we can see that the majority of students are in their 1st year , while the least are in their 3rd year. 
+
+
+
+```{r}
+
+tab <- depression_anxiety_data2$school_year%>% table()
+
+precentages <- tab %>% prop.table() %>% round(3) * 100 
+
+txt <- paste0(names(tab), '\n', precentages, '%') 
+
+pie(tab, labels=txt)
+
+```
+
+
+
+# 2) box plots :
+
+
+
+# a) age :
+
+
+
+# we can see that the students age ranges are close to each other , also there are some outliers (older students)
+
+
+
+```{r}
+
+boxplot(depression_anxiety_data$age)
+
+```
+
+
+
+# b) phq score :
+
+
+
+# we can see that the phq scores have outliers that need to be smoothed out
+
+
+
+```{r}
+
+boxplot(depression_anxiety_data$phq_score)
+
+```
+
+
+
+# c) gad score score :
+
+
+
+# we can see that the gad scores have outliers that need to be smoothed out
+
+
+
+```{r}
+
+boxplot(depression_anxiety_data$gad_score)
+
+```
+
+
+
+
+
+# d) epworth  score :
+
+
+
+# we can see that the epworth scores have outliers that need to be smoothed out
+
+
+
+```{r}
+
+boxplot(depression_anxiety_data$epworth_score)
+
+```
+
+
+
+# 3) histogram :
+
+
+
+# a) bmi :
+
+
+
+# we noticed that the most students have a bmi from 20 to 30. As for the rest of the students thier bmi are lower than 20 
+
+
+
+```{r}
+
+bmi <- depression_anxiety_data$bmi
+
+hist(bmi)
+
+```
+
+
+
+# b) age :
+
+
+
+# we noticed that the most students are of ages 18 to 22. no students are under 18 and only some are above 22.
+
+
+
+```{r}
+
+age <- depression_anxiety_data$age
+
+hist(age)
+
+```
+
+
+
+# 4) scatter plots :
+
+
+
+# a) bmi and phq score  :
+
+
+
+# This scatterplot helps us to determine whether the bmi and phq score are corelated to each other or not, it shows that the two attributes are not corelated and has no proportional relationship.
+
+
+
+```{r}
+
+xyplot(phq_score~bmi,data = depression_anxiety_data)
+
+```
+
+
+
+# b) bmi and gad score  :
+
+
+
+# This scatterplot helps us to determine whether the bmi and gad score are corelated to each other or not, it shows that the two attributes are not corelated and has no proportional relationship.
+
+
+
+
+
+```{r}
+
+xyplot(gad_score~bmi,data = depression_anxiety_data)
+
+```
+
+
+
+# c) bmi and epworth score  :
+
+
+
+# This scatterplot helps us to determine whether the bmi and epworth score are corelated to each other or not, it shows that the two attributes are not corelated and has no proportional relationship.
+
+
+
+```{r}
+
+xyplot(epworth_score~bmi,data = depression_anxiety_data)
+
+
+
+```
+
+
+
+###############################################################################
