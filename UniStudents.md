@@ -16,9 +16,9 @@ We want to group students into different categories based on their PHQ Score, GA
 
 We want to use statistical techniques to seek trends that can predict any early symptoms of depression/anxiety. This could include things like, depressiveness, anxiousness, or Sleepiness.  By catching these problems early, we can fix them and make sure students get help and achieve guidance toward the right path. This analysis will help  make students mental health more “considerable”.
 
-**3.Clustering Goal:**
+**3. Clustering Goal:**
 
-Clustering students  based on their shared characteristics to create distinct clusters. Various methods will be utilized to determine the number of clusters that best suit our dataset, followed by evaluation techniques to assess the effectiveness of these clusters in segmenting the data effectively based on their inherent features.
+We're clustering students together based on their similarities to create distinct clusters. Various methods will be utilized to determine the number of clusters that best suit our dataset, followed by evaluation techniques to assess the effectiveness of these clusters in segmenting the data effectively based on their inherent features.
 
 
 ## Dataset Details:
