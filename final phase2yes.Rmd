@@ -1,0 +1,931 @@
+---
+title: An R Markdown document converted from "./DT+Kmeans.ipynb"
+output: html_document
+---
+
+# Loading dataset
+
+```{r}
+#loading the neceassary libraries 
+suppressWarnings({
+  library(dplyr)
+library(readr)
+library(caret)
+library(tidyverse)
+library(rpart)
+    library(rattle)
+library(rpart.plot)
+library(RColorBrewer)
+    library(FSelector)
+
+
+
+})
+```
+
+```{r}
+dataset<-read_csv("depression_anxiety_data.csv")
+```
+
+```{r}
+################################### preproccing steps
+
+##find missing values
+is.na(dataset)
+
+```
+
+```{r}
+##count missing values
+sum(is.na(dataset))
+
+```
+
+```{r}
+#delete the missing values
+dataset[dataset=="Not Availble"]<- NA
+dim(dataset)
+dataset = na.omit(dataset)
+dim(dataset)
+sum(is.na(dataset))
+print(dataset)
+
+```
+i
+```{r}
+#Detect Outliers 
+#install.packages("outliers")
+library(outliers)
+
+```
+
+```{r}
+Outage = outlier(dataset$age, logical =TRUE)
+sum(Outage)
+Find_outlier = which(Outage ==TRUE, arr.ind = TRUE)
+Outage
+Find_outlier
+
+```
+
+```{r}
+
+#
+Outbmi= outlier(dataset$bmi, logical =TRUE)
+sum(Outbmi)
+Find_outlier2 = which(Outbmi==TRUE, arr.ind = TRUE)
+Outbmi
+Find_outlier2
+
+```
+
+```{r}
+#delet outliers
+dataset= dataset[-Find_outlier,]
+dataset= dataset[-Find_outlier2,]
+
+
+```
+
+```{r}
+# data transformation (change the TRUR and False to  0 and 1 )
+
+
+dataset$depressiveness = factor (dataset$depressiveness, levels = c(TRUE,FALSE), labels=c(1,0))
+print(dataset)
+dataset$suicidal = factor (dataset$suicidal, levels = c(TRUE,FALSE), labels=c(1,0))
+print(dataset)
+dataset$depression_diagnosis = factor (dataset$depression_diagnosis, levels = c(TRUE,FALSE), labels=c(1,0))
+print(dataset)
+dataset$depression_treatment = factor (dataset$depression_treatment, levels = c(TRUE,FALSE), labels=c(1,0))
+print(dataset)
+dataset$anxiousness = factor (dataset$anxiousness, levels = c(TRUE,FALSE), labels=c(1,0))
+print(dataset)
+dataset$anxiety_diagnosis = factor (dataset$anxiety_diagnosis, levels = c(TRUE,FALSE), labels=c(1,0))
+print(dataset)
+dataset$anxiety_treatment = factor (dataset$anxiety_treatment, levels = c(TRUE,FALSE), labels=c(1,0))
+print(dataset)
+dataset$sleepiness = factor (dataset$sleepiness, levels = c(TRUE,FALSE), labels=c(1,0))
+print(dataset)
+
+
+
+```
+
+```{r}
+#Discretization the values based on fixed set of predetermined criteria
+
+#1- bmi discretizatio (indicate high body fatness)
+
+breaks <- c(18,18.4,24.9,29.9,34.9,39.9,100)
+dataset$bmi= cut(dataset$bmi, breaks = breaks)
+print(dataset)
+
+```
+
+```{r}
+
+#2- phq test score discretizatio(Depression Test Questionnaire)
+
+breaks <- c(0,4,9,14,19,27)
+dataset$phq_score= cut(dataset$phq_score, breaks = breaks)
+print(dataset)
+```
+
+```{r}
+#3- gad test score discretization(Generalised Anxiety Disorder Assessment)
+
+
+breaks <- c(0,4,9,14,21)
+dataset$gad_score= cut(dataset$gad_score, breaks = breaks)
+print(dataset)
+
+```
+
+```{r}
+
+
+#4- Epworth test score discretizatio (Sleepiness Scale)
+
+breaks <- c(0,10,14,17,24)
+dataset$epworth_score= cut(dataset$epworth_score, breaks = breaks)
+print(dataset)
+
+
+######### end of preproccing 
+```
+
+```{r}
+########### diagram for the class label (depressivness)
+boolean_data <- dataset$depressiveness
+print(boolean_data)
+
+```
+
+```{r}
+# Count the occurrences of TRUE and FALSE values
+true_count <- sum(boolean_data==1)
+print(true_count)
+```
+
+```{r}
+false_count <- sum(boolean_data==0) 
+print(false_count)
+```
+
+```{r}
+# Values for the bar chart
+bar_heights <- c(true_count, false_count)
+
+# Names for the bars
+bar_names <- c("TRUE", "FALSE")
+
+# Create a bar chart
+barplot(bar_heights, names.arg = bar_names, col = c("blue", "red"),
+        xlab = "Boolean Values", ylab = "Count",
+        main = "class label (depressiveness)")
+```
+
+# Building model 
+
+
+```{r}
+# explore the dataset 
+str(dataset)
+```
+
+```{r}
+glimpse(dataset)
+```
+
+# Steps involved in the K-fold Cross Validation in R: 
+- Split the data set into K subsets randomly
+- For each one of the developed subsets of data points
+- treat that subset as the validation (test) set
+- Use all the rest subsets for training purpose
+- Training of the model and evaluate it on the validation set or test set
+- Calculate prediction error
+- Repeat the above step K times i.e., until the model is not trained and tested on all subsets
+- Generate overall prediction error by taking the average of prediction errors in every case
+
+```{r}
+# setting seed to generate a  
+# reproducible random sampling
+set.seed(123)
+```
+
+```{r}
+# there is still missing value 
+dataset <- na.omit(dataset)
+```
+
+```{r}
+#  make sure that the outcome column is a factor or numeric.
+# we need to make sure the class lable is factor 
+str(dataset$depressiveness)
+```
+
+```{r}
+# we can see the datatype is binary as true and false 
+#convert it to factor
+dataset$depressiveness <- as.factor(dataset$depressiveness)
+```
+
+# DT with k-validation 5 and attribute selection information gain, gain ratio , gini index
+
+```{r}
+#make data frame to track the process of the different tree 
+# Create an empty dataframe
+evaluation_df <- data.frame(tree = character(), accuracy = numeric(), Atrribute=character(),cv_K=character(),stringsAsFactors = FALSE)
+```
+
+# Spilt the data into k volds 
+
+```{r}
+folds <- createFolds(dataset$depressiveness, k = 5)  # create the folds
+# control parameters 
+train_control <- trainControl(method = "cv", index = folds)
+```
+
+### information gain 
+
+```{r}
+#build the model
+tree1 <- train(depressiveness ~ ., data = dataset, trControl = train_control, 
+               method = "rpart", parms = list(split = "information"))
+```
+
+```{r}
+# train result
+trained_model <- tree1$finalModel
+trained_model
+```
+
+```{r}
+#features importance
+trained_model$variable.importance
+```
+
+```{r}
+#summary of the trainig 
+summary(trained_model)
+```
+
+```{r}
+#accuracy of the tree 
+accuracy <- tree1$results$Accuracy
+print(paste("Accuracy:", accuracy))
+```
+
+```{r}
+# get the average accuracy across all fold
+accuracy <- mean(tree1$results$Accuracy)
+print(paste("Average Accuracy:", accuracy))
+```
+
+```{r}
+tree1 <- valuation_df <- data.frame(tree = "tree1", accuracy = accuracy, Atrribute="information gain",
+                                       cv_K=5)
+evaluation_df <- rbind(evaluation_df, tree1)
+```
+
+```{r}
+# visulize the tree'
+fancyRpartPlot(trained_model, caption = NULL)
+```
+
+## Gini index
+
+```{r}
+folds <- createFolds(dataset$depressiveness, k = 5)  # create the folds
+# control parameters 
+train_control <- trainControl(method = "cv", index = folds)
+```
+
+```{r}
+#build the model
+tree <- train(depressiveness ~ ., data = dataset, trControl = train_control, 
+               method = "rpart")
+```
+
+```{r}
+# train result
+trained_model <- tree$finalModel
+trained_model
+```
+
+```{r}
+trained_model$variable.importance
+```
+
+```{r}
+#summary of the trainig 
+summary(trained_model)
+```
+
+```{r}
+#accuracy of the tree 
+accuracy <- tree$results$Accuracy
+print(paste("Accuracy:", accuracy))
+# get the average accuracy across all fold
+accuracy <- mean(tree$results$Accuracy)
+print(paste("Average Accuracy:", accuracy))
+
+tree1 <- valuation_df <- data.frame(tree = "tree2", accuracy = accuracy, Atrribute="gini",
+                                       cv_K=5)
+evaluation_df <- rbind(evaluation_df, tree1)
+# visulize the tree
+fancyRpartPlot(trained_model, caption = NULL)
+```
+
+# Gain Ratio
+
+```{r}
+folds <- createFolds(dataset$depressiveness, k = 5)  # create the folds
+# control parameters 
+train_control <- trainControl(method = "cv", index = folds)
+```
+
+```{r}
+# Compute the gain ratio of attributes for predicting the depressiveness
+weights <- gain.ratio(depressiveness ~ ., data = dataset)
+
+# Print the weights
+print(weights)
+
+#build the model 
+tree <- train(depressiveness ~ ., data = dataset, trControl = train_control, 
+               method = "rpart", parms = list(split = weights))
+```
+
+```{r}
+
+trained_model <- tree$finalModel
+trained_model
+
+trained_model$variable.importance
+
+#accuracy of the tree 
+accuracy <- tree$results$Accuracy
+print(paste("Accuracy:", accuracy))
+
+# get the average accuracy across all fold
+accuracy <- mean(tree$results$Accuracy)
+print(paste("Average Accuracy:", accuracy))
+
+tree1 <- valuation_df <- data.frame(tree = "tree3", accuracy = accuracy, Atrribute="Gain ratio",
+                                       cv_K=5)
+evaluation_df <- rbind(evaluation_df, tree1)
+# visulize the tree
+fancyRpartPlot(trained_model, caption = NULL)
+```
+
+```{r}
+evaluation_df
+```
+
+#  DT with k-validation 7 and attribute selection information gain, gain ratio , gini index
+
+```{r}
+folds <- createFolds(dataset$depressiveness, k = 7)  # create the folds
+# control parameters 
+train_control <- trainControl(method = "cv", index = folds)
+```
+
+```{r}
+train_control
+```
+
+# Information gain - k=7
+
+```{r}
+#build the model
+tree <- train(depressiveness ~ ., data = dataset, trControl = train_control, 
+               method = "rpart", parms = list(split = "information"))
+```
+
+```{r}
+# train result
+trained_model <- tree$finalModel
+trained_model
+#features importance
+trained_model$variable.importance
+
+#accuracy of the tree 
+accuracy <- tree$results$Accuracy
+print(paste("Accuracy:", accuracy))
+# get the average accuracy across all fold
+accuracy <- mean(tree$results$Accuracy)
+print(paste("Average Accuracy:", accuracy))
+res <- valuation_df <- data.frame(tree = "tree4", accuracy = accuracy, Atrribute="information gain",
+                                       cv_K=7)
+evaluation_df <- rbind(evaluation_df, res)
+```
+
+# Gini index - k=7
+
+```{r}
+folds <- createFolds(dataset$depressiveness, k = 7)  # create the folds
+# control parameters 
+train_control <- trainControl(method = "cv", index = folds)
+```
+
+```{r}
+#build the model
+tree <- train(depressiveness ~ ., data = dataset, trControl = train_control, 
+               method = "rpart", parms = list(split = "gini"))
+```
+
+```{r}
+# train result
+trained_model <- tree$finalModel
+trained_model
+#features importance
+trained_model$variable.importance
+
+#accuracy of the tree 
+accuracy <- tree$results$Accuracy
+print(paste("Accuracy:", accuracy))
+# get the average accuracy across all fold
+accuracy <- mean(tree$results$Accuracy)
+print(paste("Average Accuracy:", accuracy))
+res <- valuation_df <- data.frame(tree = "tree5", accuracy = accuracy, Atrribute="Gini index",
+                                       cv_K=7)
+evaluation_df <- rbind(evaluation_df, res)
+```
+
+# Gain Ratio - k=7
+
+```{r}
+folds <- createFolds(dataset$depressiveness, k = 7)  # create the folds
+# control parameters 
+train_control <- trainControl(method = "cv", index = folds)
+```
+
+```{r}
+# Compute the gain ratio of attributes for predicting the depressiveness
+weights <- gain.ratio(depressiveness ~ ., data = dataset)
+
+# Print the weights
+print(weights)
+
+#build the model 
+tree <- train(depressiveness ~ ., data = dataset, trControl = train_control, 
+               method = "rpart", parms = list(split = weights))
+```
+
+```{r}
+#build the model
+tree <- train(depressiveness ~ ., data = dataset, trControl = train_control, 
+               method = "rpart", parms = list(split = weights))
+```
+
+```{r}
+# train result
+trained_model <- tree$finalModel
+trained_model
+#features importance
+trained_model$variable.importance
+
+#accuracy of the tree 
+accuracy <- tree$results$Accuracy
+print(paste("Accuracy:", accuracy))
+# get the average accuracy across all fold
+accuracy <- mean(tree$results$Accuracy)
+print(paste("Average Accuracy:", accuracy))
+res <- valuation_df <- data.frame(tree = "tree6", accuracy = accuracy, Atrribute="Gain Ratio",
+                                       cv_K=7)
+evaluation_df <- rbind(evaluation_df, res)
+```
+
+```{r}
+fancyRpartPlot(trained_model, caption = NULL)
+```
+
+# DT with k-validation 10 and attribute selection information gain, gain ratio , gini index
+
+# information gain - k=10
+
+```{r}
+folds <- createFolds(dataset$depressiveness, k = 10)  # create the folds
+
+# control parameters 
+train_control <- trainControl(method = "cv", index = folds)
+
+#build the model
+tree <- train(depressiveness ~ ., data = dataset, trControl = train_control, 
+               method = "rpart", parms = list(split = "information"))
+
+# train result
+trained_model <- tree$finalModel
+trained_model
+
+#features importance
+trained_model$variable.importance
+
+#accuracy of the tree 
+accuracy <- tree$results$Accuracy
+print(paste("Accuracy:", accuracy))
+
+# get the average accuracy across all fold
+accuracy <- mean(tree$results$Accuracy)
+print(paste("Average Accuracy:", accuracy))
+
+res <- valuation_df <- data.frame(tree = "tree7", accuracy = accuracy, Atrribute="information gain",
+                                       cv_K=10)
+evaluation_df <- rbind(evaluation_df, res)
+```
+
+# Gini index - k=10
+
+```{r}
+folds <- createFolds(dataset$depressiveness, k = 10)  # create the folds
+
+# control parameters 
+train_control <- trainControl(method = "cv", index = folds)
+
+#build the model
+tree <- train(depressiveness ~ ., data = dataset, trControl = train_control, 
+               method = "rpart", parms = list(split = "gini"))
+
+# train result
+trained_model <- tree$finalModel
+trained_model
+
+#features importance
+trained_model$variable.importance
+
+#accuracy of the tree 
+accuracy <- tree$results$Accuracy
+print(paste("Accuracy:", accuracy))
+
+# get the average accuracy across all fold
+accuracy <- mean(tree$results$Accuracy)
+print(paste("Average Accuracy:", accuracy))
+
+res <- valuation_df <- data.frame(tree = "tree8", accuracy = accuracy, Atrribute="Gini index",
+                                       cv_K=10)
+evaluation_df <- rbind(evaluation_df, res)
+```
+
+# Gain ratio - k=10
+
+```{r}
+folds <- createFolds(dataset$depressiveness, k = 10)  # create the folds
+
+# control parameters 
+train_control <- trainControl(method = "cv", index = folds)
+
+# Compute the gain ratio of attributes for predicting the depressiveness
+weights <- gain.ratio(depressiveness ~ ., data = dataset)
+
+# Print the weights
+print(weights)
+
+#build the model 
+tree <- train(depressiveness ~ ., data = dataset, trControl = train_control, 
+               method = "rpart", parms = list(split = weights))
+```
+
+```{r}
+# train result
+trained_model <- tree$finalModel
+trained_model
+
+#features importance
+trained_model$variable.importance
+
+#accuracy of the tree 
+accuracy <- tree$results$Accuracy
+print(paste("Accuracy:", accuracy))
+
+# get the average accuracy across all fold
+accuracy <- mean(tree$results$Accuracy)
+print(paste("Average Accuracy:", accuracy))
+
+res <- valuation_df <- data.frame(tree = "tree9", accuracy = accuracy, Atrribute="Gain Ratio",
+                                       cv_K=10)
+evaluation_df <- rbind(evaluation_df, res)
+```
+
+```{r}
+evaluation_df
+```
+
+# Clustering 
+
+```{r}
+# include the libraries and import the dataset 
+library('superml')
+library(cluster)
+library(factoextra)
+```
+
+```{r}
+# import the dataset 
+df<-dataset
+```
+
+```{r}
+head(df,10)
+```
+
+```{r}
+str(df)
+```
+
+# let's  prepocess the data before applay clustering as well as kmeans deal only with numeric we need to convert factor and chr to numeric value, like labels encoding 
+
+```{r}
+# using label encoder
+encoding <- LabelEncoder$new()
+```
+
+```{r}
+# Identify categorical columns
+categorical_cols <- dataset %>%
+  select_if(is.character) %>%
+  names()
+```
+
+```{r}
+categorical_cols
+```
+
+```{r}
+# Convert categorical columns to factors
+df[categorical_cols] <- lapply(df[categorical_cols], as.factor)
+```
+
+```{r}
+str(df)
+```
+
+```{r}
+categorical_cols <- dataset %>%
+  select_if(is.factor) %>%
+  names()
+categorical_cols
+```
+
+```{r}
+for (col in categorical_cols)
+{
+    # Fit the LabelEncoder object to the data frame column
+encoding$fit(df[[col]])
+
+# Transform the data frame column using the LabelEncoder object
+encoded_col <- encoding$fit_transform(df[[col]])
+# Assign the encoded column to the data frame
+df[[col]] <- encoded_col
+}
+```
+
+```{r}
+head(df,10)
+```
+
+```{r}
+# still some data has not changed lets convert them manually 
+encoding$fit(df$gender)
+
+# Transform the data frame column using the LabelEncoder object
+encoded_col <- encoding$fit_transform(df$gender)
+
+# Assign the encoded column to the data frame
+df$gender <- encoded_col
+```
+
+```{r}
+# still some data has not changed lets convert them manually 
+encoding$fit(df$depression_severity)
+
+# Transform the data frame column using the LabelEncoder object
+encoded_col <- encoding$fit_transform(df$depression_severity)
+
+# Assign the encoded column to the data frame
+df$depression_severity <- encoded_col
+
+
+# still some data has not changed lets convert them manually 
+encoding$fit(df$who_bmi)
+
+# Transform the data frame column using the LabelEncoder object
+encoded_col <- encoding$fit_transform(df$who_bmi)
+
+# Assign the encoded column to the data frame
+df$who_bmi <- encoded_col
+
+
+# still some data has not changed lets convert them manually 
+encoding$fit(df$anxiety_severity)
+
+# Transform the data frame column using the LabelEncoder object
+encoded_col <- encoding$fit_transform(df$anxiety_severity)
+
+# Assign the encoded column to the data frame
+df$anxiety_severity <- encoded_col
+```
+
+```{r}
+head(df)
+```
+
+```{r}
+# lets spilt the data to target will not be used for clustering , also id not relvant to the case 
+target <- data.frame(depressiveness = df$depressiveness)
+predictors <- df[, -c(1,9)]
+head(predictors)
+```
+
+```{r}
+# Define a function to compute BCubed precision and recall
+bcubed <- function(cluster, category) {
+  # Check the input arguments
+  if (length(cluster) != length(category)) {
+    stop("cluster and category must have the same length")
+  }
+  if (any(is.na(cluster)) || any(is.na(category))) {
+    stop("cluster and category must not contain NA values")
+  }
+  # Convert cluster and category to factors
+  cluster <- factor(cluster)
+  category <- factor(category)
+  # Initialize the precision and recall vectors
+  precision <- numeric(length(cluster))
+  recall <- numeric(length(cluster))
+  # Loop over each item
+  for (i in 1:length(cluster)) {
+    # Find the items in the same cluster as the current item
+    same_cluster <- which(cluster == cluster[i])
+    # Find the items in the same category as the current item
+    same_category <- which(category == category[i])
+    # Compute the precision and recall for the current item
+    precision[i] <- length(intersect(same_cluster, same_category)) / length(same_cluster)
+    recall[i] <- length(intersect(same_cluster, same_category)) / length(same_category)
+  }
+  # Return the average precision and recall
+  return(c(precision = mean(precision), recall = mean(recall)))
+}
+```
+
+# “using elbow” --- to determine the optimal number of clusters.
+
+```{r}
+fviz_nbclust(predictors, kmeans, method = "wss")
+```
+
+# Cluster with k=5
+
+```{r}
+#perform k-means clustering with k = 5 clusters
+km <- kmeans(predictors, centers = 5, nstart = 25)
+
+#view results
+km
+```
+
+```{r}
+#plot results of k-means 
+fviz_cluster(km, data =predictors )
+```
+
+```{r}
+clusplot(df, km$cluster, color = TRUE, shade = TRUE, labels = 5)
+```
+
+```{r}
+# Evaluate and compare the results
+silhouette_score <- silhouette(km$cluster, dist(predictors))
+silhouette_score
+```
+
+```{r}
+#decrase the cluster by 1 cause on label encoding we start with 0
+nc<-km$cluster-1
+```
+
+```{r}
+# bcubed precision and recall 
+bcubed(nc, df$depressiveness)
+```
+
+### performing operations to analyze the differences between the Actual and cluster variables.
+
+```{r}
+df1<-data.frame(Actual=df$depressiveness,cluster=nc)
+head(df1,10)
+
+#length 
+length(df1$Actual)
+length(df1$cluster)
+
+#count number of cluster with matched vlaues 
+cont_table <- table(df1$Actual, df1$cluster)
+cont_table
+
+differences <- sum(apply(cont_table, 1, max)) - sum(diag(cont_table))
+print(paste("difference: ",differences))
+```
+
+# Cluster with k=4
+
+```{r}
+#perform k-means clustering with k = 4 clusters
+km <- kmeans(predictors, centers = 4, nstart = 25)
+
+#view results
+km
+```
+
+```{r}
+#plot results of k-means 
+fviz_cluster(km, data =predictors )
+```
+
+```{r}
+clusplot(df, km$cluster, color = TRUE, shade = TRUE, labels = 4)
+```
+
+```{r}
+# Evaluate and compare the results
+silhouette_score <- silhouette(km$cluster, dist(predictors))
+silhouette_score
+```
+
+```{r}
+#decrase the cluster by 1 cause on label encoding we start with 0
+nc<-km$cluster-1
+```
+
+```{r}
+# bcubed precision and recall 
+bcubed(nc, df$depressiveness)
+```
+
+### performing operations to analyze the differences between the Actual and cluster variables.
+
+```{r}
+df1<-data.frame(Actual=df$depressiveness,cluster=nc)
+head(df1,10)
+
+#length 
+length(df1$Actual)
+length(df1$cluster)
+
+#count number of cluster with matched vlaues 
+cont_table <- table(df1$Actual, df1$cluster)
+cont_table
+
+differences <- sum(apply(cont_table, 1, max)) - sum(diag(cont_table))
+print(paste("difference: ",differences))
+```
+
+# Cluster with k=3
+
+```{r}
+#perform k-means clustering with k = 3 clusters
+km <- kmeans(predictors, centers = 3, nstart = 25)
+
+#view results
+km
+```
+
+```{r}
+#plot results of k-means 
+fviz_cluster(km, data = predictors)
+```
+
+```{r}
+clusplot(df, km$cluster, color = TRUE, shade = TRUE, labels = 3)
+```
+
+```{r}
+# Evaluate and compare the results
+silhouette_score <- silhouette(km$cluster, dist(predictors))
+silhouette_score
+```
+
+```{r}
+#decrase the cluster by 1 cause on label encoding we start with 0
+nc<-km$cluster-1
+
+# bcubed precision and recall 
+bcubed(nc, df$depressiveness)
+```
+### performing operations to analyze the differences between the Actual and cluster variables.
+```{r}
+df1<-data.frame(Actual=df$depressiveness,cluster=nc)
+head(df1,10)
+
+#length 
+length(df1$Actual)
+length(df1$cluster)
+
+#count number of cluster with matched vlaues 
+cont_table <- table(df1$Actual, df1$cluster)
+cont_table
+
+differences <- sum(apply(cont_table, 1, max)) - sum(diag(cont_table))
+print(paste("difference: ",differences))
+```
