@@ -47,6 +47,7 @@ We encoded categorical values, including those within columns with character typ
 ### Feature selection and dimensionality reduction:
 
 ### Finding and removing outliers:
+We first identified outliers in numerical attributes like age, PHQ score, EPWORTH score, and GAD score by creating a box plot, and then we removed these outliers. By lowering the amount of noise in the dataset, this procedure attempted to improve the quality and dependability of analytical findings when using data mining techniques.
 
 ### Discretization: 
 To improve interpretability and reduce the possibility of overfitting, we added an extra step to our analysis: we separated the BMI, PHQ, GAD, and Epworth test ranges into continuous intervals. The goal of this discretization technique is to keep the model from getting unduly complex while still giving these continuous variables a clearer representation. The definition of the intervals is as follows:
