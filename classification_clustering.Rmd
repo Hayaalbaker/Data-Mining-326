@@ -1440,4 +1440,6 @@ We also calculated the difference between the actual results and our clustering 
 
 
 ## Refrences
-
+[1]K. Mazidi, “RPubs - Data Mining: Classification with Decision Trees,” RPubs, 2016.  [Online]. Available: https://rpubs.com/kjmazidi/195428. [Accessed: Dec. 02, 2023]
+[2]C. Guild, “RPubs - Classification and Regression Trees (CART) in R,” RPubs, 2021.  [Online]. Available: https://rpubs.com/camguild/803096. [Accessed: Dec. 02, 2023]
+[3]S. BJUT, “Depression and anxiety data,” Kaggle, Jul. 29, 2022.  [Online]. Available: https://www.kaggle.com/datasets/shahzadahmad0402/depression-and-anxiety-data. [Accessed: Dec. 02, 2023]
