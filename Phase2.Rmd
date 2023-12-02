@@ -250,8 +250,6 @@ barplot(bar_heights, names.arg = bar_names, col = c("blue", "red"),
 ```
 # phase 3
 # Building model 
-
-
 ```{r}
 # explore the dataset 
 str(dataset)
@@ -260,6 +258,91 @@ str(dataset)
 ```{r}
 glimpse(dataset)
 ```
+
+# Check if the data is balanced or not 
+
+```{r}
+# Calculate class distribution
+class_distribution <- dataset %>% 
+  group_by(depressiveness) %>% 
+  summarise(count = n()) %>% 
+  mutate(percentage = count / sum(count) * 100)
+
+# Print class distribution
+print(class_distribution)
+```
+
+```{r}
+barplot(prop.table(table(dataset$depressiveness)),
+        col = rainbow(2),
+        ylim = c(0, 0.7),
+        main = "Class Distribution")
+```
+
+```{r}
+# Based on the plot it clearly evident that 73% of the data in 0 class and the remaining 26% in another class.
+
+# So big difference observed in the amount of data available. If we are making a model based on these a dataset accuracy predicting students not admitted will be higher compared to students who are admitted.
+```
+
+# we can observe that the dataset is imbalanced 
+
+<!-- Data Partition
+Lets partition the dataset into train dataset and test dataset based on set.seed -->
+
+# Over Sampling to handle imbalanced 
+
+```{r}
+library(ROSE)
+library(caTools)
+```
+
+```{r}
+# there is still missing value 
+dataset <- na.omit(dataset)
+```
+
+```{r}
+set.seed(123)
+split <- sample.split(dataset$depressiveness, SplitRatio = 0.8)
+train <- subset(dataset, split == TRUE)
+test <- subset(dataset, split == FALSE)
+table(train$depressiveness)
+```
+
+```{r}
+
+# Perform oversampling using ovun.sample
+over <- ovun.sample(depressiveness ~ ., data = train, method = "over",N=772)$data
+table(over$depressiveness)
+actual_labels<-test$depressiveness
+```
+
+```{r}
+barplot(prop.table(table(over$depressiveness)),
+        col = rainbow(2),
+        ylim = c(0, 0.7),
+        main = "Class Distribution")
+```
+
+```{r}
+# as we can see the data of training is almost balanced 
+```
+
+```{r}
+# Perform oversampling using ovun.sample
+under <- ovun.sample(depressiveness ~ ., data = train, method = "under",N=310)$data
+table(under$depressiveness)
+```
+
+```{r}
+barplot(prop.table(table(under$depressiveness)),
+        col = rainbow(2),
+        ylim = c(0, 0.7),
+        main = "Class Distribution")
+```
+
+# we will use over sampling for this example 
 
 # Steps involved in the K-fold Cross Validation in R: 
 - Split the data set into K subsets randomly
@@ -271,15 +354,12 @@ glimpse(dataset)
 - Repeat the above step K times i.e., until the model is not trained and tested on all subsets
 - Generate overall prediction error by taking the average of prediction errors in every case
 
-```{r}
-# setting seed to generate a  
-# reproducible random sampling
-set.seed(123)
-```
+# let's rename our new sampling dataset  
 
 ```{r}
-# there is still missing value 
-dataset <- na.omit(dataset)
+# assign the dataset to over sample datasets
+set.seed(123)
+dataset<-over
 ```
 
 ```{r}
@@ -299,10 +379,10 @@ dataset$depressiveness <- as.factor(dataset$depressiveness)
 ```{r}
 #make data frame to track the process of the different tree 
 # Create an empty dataframe
-evaluation_df <- data.frame(tree = character(), accuracy = numeric(), Atrribute=character(),cv_K=character(),stringsAsFactors = FALSE)
+evaluation_df <- data.frame(tree = character(), accuracy = numeric(),Precision = numeric(),Recall = numeric(),F1 = numeric(), Atrribute=character(),cv_K=character(),stringsAsFactors = FALSE)
 ```
 
-# Spilt the data into k folds 
+# Spilt the data into k volds 
 
 ```{r}
 folds <- createFolds(dataset$depressiveness, k = 5)  # create the folds
@@ -347,12 +427,41 @@ print(paste("Average Accuracy:", accuracy))
 ```
 
 ```{r}
-tree1 <- valuation_df <- data.frame(tree = "tree1", accuracy = accuracy, Atrribute="information gain",
-                                       cv_K=5)
-evaluation_df <- rbind(evaluation_df, tree1)
+predictions <- predict(tree1, test)
+length(predictions)
 ```
 
 ```{r}
+length(test$depressiveness)
+```
+
+```{r}
+# predict on test data
+predictions <- predict(tree1, newdata=test)
+predictions <- factor(predictions, levels = levels(test$depressiveness))
+
+# Proceed with creating the confusion matrix and calculating metrics
+confusion <- confusionMatrix(predictions, test$depressiveness)
+
+# Getting the accuracy from the confusion matrix
+accuracy <- confusion$overall['Accuracy']
+
+# Calculate precision
+precision <- confusion$byClass["Precision"]
+
+# Calculate recall (sensitivity)
+recall <- confusion$byClass["Recall"]
+
+# Calculate F1 score
+f1_score <- confusion$byClass["F1"]
+
+# Print the results
+print(confusion)
+
+# add to the dataset of evalution 
+tree1 <- valuation_df <- data.frame(tree = "tree1", accuracy = accuracy,Precision =precision,Recall =recall ,F1=f1_score, Atrribute="information gain",
+                                       cv_K=5)
+evaluation_df <- rbind(evaluation_df, tree1)
 # visulize the tree'
 fancyRpartPlot(trained_model, caption = NULL)
 ```
@@ -360,6 +469,7 @@ fancyRpartPlot(trained_model, caption = NULL)
 ## Gini index
 
 ```{r}
+dataset<-over
 folds <- createFolds(dataset$depressiveness, k = 5)  # create the folds
 # control parameters 
 train_control <- trainControl(method = "cv", index = folds)
@@ -393,17 +503,51 @@ print(paste("Accuracy:", accuracy))
 # get the average accuracy across all fold
 accuracy <- mean(tree$results$Accuracy)
 print(paste("Average Accuracy:", accuracy))
+```
 
-tree1 <- valuation_df <- data.frame(tree = "tree2", accuracy = accuracy, Atrribute="gini",
+```{r}
+predict(tree, test)
+```
+
+```{r}
+# predict on test data
+predictions <- predict(tree, test)
+predictions <- factor(predictions, levels = levels(test$depressiveness))
+
+# Proceed with creating the confusion matrix and calculating metrics
+confusion <- confusionMatrix(predictions, test$depressiveness)
+
+# Getting the accuracy from the confusion matrix
+accuracy <- confusion$overall['Accuracy']
+
+# Calculate precision
+precision <- confusion$byClass["Precision"]
+
+# Calculate recall (sensitivity)
+recall <- confusion$byClass["Recall"]
+
+# Calculate F1 score
+f1_score <- confusion$byClass["F1"]
+
+# Print the results
+print(confusion)
+
+# add to the dataset of evalution 
+tree1 <- valuation_df <- data.frame(tree = "tree2", accuracy = accuracy,Precision =precision,Recall =recall ,F1=f1_score, Atrribute="Ginin index",
                                        cv_K=5)
 evaluation_df <- rbind(evaluation_df, tree1)
-# visulize the tree
+# visulize the tree'
 fancyRpartPlot(trained_model, caption = NULL)
+```
+
+```{r}
+evaluation_df
 ```
 
 # Gain Ratio
 
 ```{r}
+dataset<-over
 folds <- createFolds(dataset$depressiveness, k = 5)  # create the folds
 # control parameters 
 train_control <- trainControl(method = "cv", index = folds)
@@ -435,11 +579,36 @@ print(paste("Accuracy:", accuracy))
 # get the average accuracy across all fold
 accuracy <- mean(tree$results$Accuracy)
 print(paste("Average Accuracy:", accuracy))
+```
 
-tree1 <- valuation_df <- data.frame(tree = "tree3", accuracy = accuracy, Atrribute="Gain ratio",
+```{r}
+# predict on test data
+predictions <- predict(tree, test)
+predictions <- factor(predictions, levels = levels(test$depressiveness))
+
+# Proceed with creating the confusion matrix and calculating metrics
+confusion <- confusionMatrix(predictions, test$depressiveness)
+
+# Getting the accuracy from the confusion matrix
+accuracy <- confusion$overall['Accuracy']
+
+# Calculate precision
+precision <- confusion$byClass["Precision"]
+
+# Calculate recall (sensitivity)
+recall <- confusion$byClass["Recall"]
+
+# Calculate F1 score
+f1_score <- confusion$byClass["F1"]
+
+# Print the results
+print(confusion)
+
+# add to the dataset of evalution 
+tree1 <- valuation_df <- data.frame(tree = "tree3", accuracy = accuracy,Precision =precision,Recall =recall ,F1=f1_score, Atrribute="Gain ratio",
                                        cv_K=5)
 evaluation_df <- rbind(evaluation_df, tree1)
-# visulize the tree
+# visulize the tree'
 fancyRpartPlot(trained_model, caption = NULL)
 ```
 
@@ -450,6 +619,7 @@ evaluation_df
 #  DT with k-validation 7 and attribute selection information gain, gain ratio , gini index
 
 ```{r}
+dataset<-over
 folds <- createFolds(dataset$depressiveness, k = 7)  # create the folds
 # control parameters 
 train_control <- trainControl(method = "cv", index = folds)
@@ -480,14 +650,47 @@ print(paste("Accuracy:", accuracy))
 # get the average accuracy across all fold
 accuracy <- mean(tree$results$Accuracy)
 print(paste("Average Accuracy:", accuracy))
-res <- valuation_df <- data.frame(tree = "tree4", accuracy = accuracy, Atrribute="information gain",
+```
+
+```{r}
+# predict on test data
+predictions <- predict(tree, test)
+predictions <- factor(predictions, levels = levels(test$depressiveness))
+
+# Proceed with creating the confusion matrix and calculating metrics
+confusion <- confusionMatrix(predictions, test$depressiveness)
+
+# Getting the accuracy from the confusion matrix
+accuracy <- confusion$overall['Accuracy']
+
+# Calculate precision
+precision <- confusion$byClass["Precision"]
+
+# Calculate recall (sensitivity)
+recall <- confusion$byClass["Recall"]
+
+# Calculate F1 score
+f1_score <- confusion$byClass["F1"]
+
+# Print the results
+print(confusion)
+
+# add to the dataset of evalution 
+tree1 <- valuation_df <- data.frame(tree = "tree4", accuracy = accuracy,Precision =precision,Recall =recall ,F1=f1_score, Atrribute="Information Gain",
                                        cv_K=7)
-evaluation_df <- rbind(evaluation_df, res)
+evaluation_df <- rbind(evaluation_df, tree1)
+# visulize the tree'
+fancyRpartPlot(trained_model, caption = NULL)
+```
+
+```{r}
+evaluation_df
 ```
 
 # Gini index - k=7
 
 ```{r}
+dataset<-over
 folds <- createFolds(dataset$depressiveness, k = 7)  # create the folds
 # control parameters 
 train_control <- trainControl(method = "cv", index = folds)
@@ -512,14 +715,43 @@ print(paste("Accuracy:", accuracy))
 # get the average accuracy across all fold
 accuracy <- mean(tree$results$Accuracy)
 print(paste("Average Accuracy:", accuracy))
-res <- valuation_df <- data.frame(tree = "tree5", accuracy = accuracy, Atrribute="Gini index",
+```
+
+```{r}
+# predict on test data
+predictions <- predict(tree, test)
+predictions <- factor(predictions, levels = levels(test$depressiveness))
+
+# Proceed with creating the confusion matrix and calculating metrics
+confusion <- confusionMatrix(predictions, test$depressiveness)
+
+# Getting the accuracy from the confusion matrix
+accuracy <- confusion$overall['Accuracy']
+
+# Calculate precision
+precision <- confusion$byClass["Precision"]
+
+# Calculate recall (sensitivity)
+recall <- confusion$byClass["Recall"]
+
+# Calculate F1 score
+f1_score <- confusion$byClass["F1"]
+
+# Print the results
+print(confusion)
+
+# add to the dataset of evalution 
+tree1 <- valuation_df <- data.frame(tree = "tree5", accuracy = accuracy,Precision =precision,Recall =recall ,F1=f1_score, Atrribute="Gini index",
                                        cv_K=7)
-evaluation_df <- rbind(evaluation_df, res)
+evaluation_df <- rbind(evaluation_df, tree1)
+# visulize the tree'
+fancyRpartPlot(trained_model, caption = NULL)
 ```
 
 # Gain Ratio - k=7
 
 ```{r}
+dataset<-under
 folds <- createFolds(dataset$depressiveness, k = 7)  # create the folds
 # control parameters 
 train_control <- trainControl(method = "cv", index = folds)
@@ -556,12 +788,40 @@ print(paste("Accuracy:", accuracy))
 # get the average accuracy across all fold
 accuracy <- mean(tree$results$Accuracy)
 print(paste("Average Accuracy:", accuracy))
-res <- valuation_df <- data.frame(tree = "tree6", accuracy = accuracy, Atrribute="Gain Ratio",
-                                       cv_K=7)
-evaluation_df <- rbind(evaluation_df, res)
 ```
 
 ```{r}
+fancyRpartPlot(trained_model, caption = NULL)
+```
+
+```{r}
+# predict on test data
+predictions <- predict(tree, test)
+predictions <- factor(predictions, levels = levels(test$depressiveness))
+
+# Proceed with creating the confusion matrix and calculating metrics
+confusion <- confusionMatrix(predictions, test$depressiveness)
+
+# Getting the accuracy from the confusion matrix
+accuracy <- confusion$overall['Accuracy']
+
+# Calculate precision
+precision <- confusion$byClass["Precision"]
+
+# Calculate recall (sensitivity)
+recall <- confusion$byClass["Recall"]
+
+# Calculate F1 score
+f1_score <- confusion$byClass["F1"]
+
+# Print the results
+print(confusion)
+
+# add to the dataset of evalution 
+tree1 <- valuation_df <- data.frame(tree = "tree6", accuracy = accuracy,Precision =precision,Recall =recall ,F1=f1_score, Atrribute="Gain ratio",
+                                       cv_K=7)
+evaluation_df <- rbind(evaluation_df, tree1)
+# visulize the tree'
 fancyRpartPlot(trained_model, caption = NULL)
 ```
 
@@ -570,6 +830,7 @@ fancyRpartPlot(trained_model, caption = NULL)
 # information gain - k=10
 
 ```{r}
+dataset<-under
 folds <- createFolds(dataset$depressiveness, k = 10)  # create the folds
 
 # control parameters 
@@ -593,15 +854,43 @@ print(paste("Accuracy:", accuracy))
 # get the average accuracy across all fold
 accuracy <- mean(tree$results$Accuracy)
 print(paste("Average Accuracy:", accuracy))
+```
 
-res <- valuation_df <- data.frame(tree = "tree7", accuracy = accuracy, Atrribute="information gain",
+```{r}
+# predict on test data
+predictions <- predict(tree, test)
+predictions <- factor(predictions, levels = levels(test$depressiveness))
+
+# Proceed with creating the confusion matrix and calculating metrics
+confusion <- confusionMatrix(predictions, test$depressiveness)
+
+# Getting the accuracy from the confusion matrix
+accuracy <- confusion$overall['Accuracy']
+
+# Calculate precision
+precision <- confusion$byClass["Precision"]
+
+# Calculate recall (sensitivity)
+recall <- confusion$byClass["Recall"]
+
+# Calculate F1 score
+f1_score <- confusion$byClass["F1"]
+
+# Print the results
+print(confusion)
+
+# add to the dataset of evalution 
+tree1 <- valuation_df <- data.frame(tree = "tree7", accuracy = accuracy,Precision =precision,Recall =recall ,F1=f1_score, Atrribute=" information Gain ",
                                        cv_K=10)
-evaluation_df <- rbind(evaluation_df, res)
+evaluation_df <- rbind(evaluation_df, tree1)
+# visulize the tree'
+fancyRpartPlot(trained_model, caption = NULL)
 ```
 
 # Gini index - k=10
 
 ```{r}
+dataset<-under
 folds <- createFolds(dataset$depressiveness, k = 10)  # create the folds
 
 # control parameters 
@@ -625,15 +914,42 @@ print(paste("Accuracy:", accuracy))
 # get the average accuracy across all fold
 accuracy <- mean(tree$results$Accuracy)
 print(paste("Average Accuracy:", accuracy))
+```
 
-res <- valuation_df <- data.frame(tree = "tree8", accuracy = accuracy, Atrribute="Gini index",
+```{r}
+# predict on test data
+predictions <- predict(tree, test)
+predictions <- factor(predictions, levels = levels(test$depressiveness))
+
+# Proceed with creating the confusion matrix and calculating metrics
+confusion <- confusionMatrix(predictions, test$depressiveness)
+
+# Getting the accuracy from the confusion matrix
+accuracy <- confusion$overall['Accuracy']
+# Calculate precision
+precision <- confusion$byClass["Precision"]
+
+# Calculate recall (sensitivity)
+recall <- confusion$byClass["Recall"]
+
+# Calculate F1 score
+f1_score <- confusion$byClass["F1"]
+
+# Print the results
+print(confusion)
+
+# add to the dataset of evalution 
+tree1 <- valuation_df <- data.frame(tree = "tree8", accuracy = accuracy,Precision =precision,Recall =recall ,F1=f1_score, Atrribute="Gini index",
                                        cv_K=10)
-evaluation_df <- rbind(evaluation_df, res)
+evaluation_df <- rbind(evaluation_df, tree1)
+# visulize the tree'
+fancyRpartPlot(trained_model, caption = NULL)
 ```
 
 # Gain ratio - k=10
 
 ```{r}
+dataset<-under
 folds <- createFolds(dataset$depressiveness, k = 10)  # create the folds
 
 # control parameters 
@@ -665,16 +981,42 @@ print(paste("Accuracy:", accuracy))
 # get the average accuracy across all fold
 accuracy <- mean(tree$results$Accuracy)
 print(paste("Average Accuracy:", accuracy))
+```
 
-res <- valuation_df <- data.frame(tree = "tree9", accuracy = accuracy, Atrribute="Gain Ratio",
+```{r}
+# predict on test data
+predictions <- predict(tree, test)
+predictions <- factor(predictions, levels = levels(test$depressiveness))
+
+# Proceed with creating the confusion matrix and calculating metrics
+confusion <- confusionMatrix(predictions, test$depressiveness)
+
+# Calculate precision
+precision <- confusion$byClass["Precision"]
+
+# Getting the accuracy from the confusion matrix
+accuracy <- confusion$overall['Accuracy']
+
+# Calculate recall (sensitivity)
+recall <- confusion$byClass["Recall"]
+
+# Calculate F1 score
+f1_score <- confusion$byClass["F1"]
+
+# Print the results
+print(confusion)
+
+# add to the dataset of evalution 
+tree1 <- valuation_df <- data.frame(tree = "tree9", accuracy = accuracy,Precision =precision,Recall =recall ,F1=f1_score, Atrribute="Gain ratio",
                                        cv_K=10)
-evaluation_df <- rbind(evaluation_df, res)
+evaluation_df <- rbind(evaluation_df, tree1)
+# visulize the tree'
+fancyRpartPlot(trained_model, caption = NULL)
 ```
 
 ```{r}
 evaluation_df
 ```
-
 
 ########## Clustering ################
 
