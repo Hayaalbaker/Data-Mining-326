@@ -54,7 +54,7 @@ We encoded categorical values, including those within columns with character typ
 ## Clustering:
 ##### Main points:
 - K-means algorithm-based unsupervised learning techniques were utilized.
-- The "depressiveness" attribute was left out of the clustering analysis.
+- Removed the class label from the dataset as clustering is an unsupervised learning process.
 - A variety of data types were taken into consideration including:
     - Age
     - Gender
