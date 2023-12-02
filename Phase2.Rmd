@@ -2,6 +2,18 @@
 title:depression_anxiety_data
 output: html_document
 ---
+# phase 1
+
+### Problem statement
+The dataset aims to identify and evaluate the severity of depression and anxiety among undergraduate students at the University of Lahore. 
+The problem revolves around understanding the impact of depression and anxiety on students' studies and social behavior
+
+### Data mining task
+The task involves utilizing the dataset as a basis for evaluating different machine-learning methods and approaches, particularly for the classification of the severity of depression and anxiety. 
+
+Additionally, the dataset is suitable for comparing different machine-learning classification approaches to identify effective strategies for addressing mental health issues among students.
+
+### Goal
 
 # Loading dataset
 
