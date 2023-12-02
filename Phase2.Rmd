@@ -1369,3 +1369,17 @@ Based on these metrics, we can assess the performance of each K value:
 -   Total Within-Cluster Sum of Squares: The lowest value is observed at K = 4 (4247.212), indicating better cluster compactness compared to K= 2 and K = 3.
 
 -   BCubed Precision and Recall:  precision highest at K = 4, recall highest at k=2 suggesting a better match between the clustering assignments and the ground truth or desired clustering structure.
+
+
+
+
+## Findings
+
+
+
+
+
+
+
+
+## Refrences
