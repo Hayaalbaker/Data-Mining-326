@@ -40,12 +40,8 @@ In order to understand the distribution and central values of the important vari
 ### Graph visualization:
 We used scatter plots as a visualization tool in the graphs to evaluate the variable distribution. To be more precise, we used the **BMI** in combination with the **PHQ score, GAD score, and EPWORTH score** to see how each attribute's distribution varied. The comprehensive view offered by the scatter plots indicates that there is no significant correlation or proportionality between these attributes.
 
-### Concept hierarchy generation for nominal data:
-
 ### Encoding categorical data:
 We encoded categorical values, including those within columns with character types, and simultaneously removed irrelevant attributes like **student id**. This approach aligns with the optimization of machine learning algorithms, as they are typically designed to operate more efficiently with factors data rather than character data. Additionally, this encoding enhances the overall performance and interpretability of the data.
-
-### Feature selection and dimensionality reduction:
 
 ### Finding and removing outliers:
 We first identified outliers in numerical attributes like age, PHQ score, EPWORTH score, and GAD score by creating a box plot, and then we removed these outliers. By lowering the amount of noise in the dataset, this procedure attempted to improve the quality and dependability of analytical findings when using data mining techniques.
