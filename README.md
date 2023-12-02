@@ -49,6 +49,13 @@ We encoded categorical values, including those within columns with character typ
 ### Finding and removing outliers:
 
 ### Discretization: 
+To improve interpretability and reduce the possibility of overfitting, we added an extra step to our analysis: we separated the BMI, PHQ, GAD, and Epworth test ranges into continuous intervals. The goal of this discretization technique is to keep the model from getting unduly complex while still giving these continuous variables a clearer representation. The definition of the intervals is as follows:
+1. (0,4]
+2. (5,10]
+3. (10,15]
+4. (15,22]
+   
+By making our models more resilient and flexible to different data patterns within the designated intervals, this segmentation helps to improve the performance of our models while also making the interpretation of these important variables easier.
 
 ## Clustering:
 ##### Main points:
