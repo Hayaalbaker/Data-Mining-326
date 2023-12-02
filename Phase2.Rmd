@@ -1,5 +1,5 @@
 ---
-title: An R Markdown document converted from "./DT+Kmeans.ipynb"
+title:depression_anxiety_data
 output: html_document
 ---
 
@@ -239,7 +239,7 @@ dataset$depressiveness <- as.factor(dataset$depressiveness)
 evaluation_df <- data.frame(tree = character(), accuracy = numeric(), Atrribute=character(),cv_K=character(),stringsAsFactors = FALSE)
 ```
 
-# Spilt the data into k volds 
+# Spilt the data into k folds 
 
 ```{r}
 folds <- createFolds(dataset$depressiveness, k = 5)  # create the folds
