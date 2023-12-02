@@ -1,5 +1,4 @@
 # Data-Mining-326
--------------------------------------------------------------------------
 
 ### Group Members:
 
@@ -40,7 +39,7 @@ The codes in this section are designed to help you find the missing values in th
 ### Concept hierarchy generation for nominal data:
 
 ### Encoding categorical data  
-We encoded categorical values, including those within columns with character types, and simultaneously removed irrelevant attributes like student id. This approach aligns with the optimization of machine learning algorithms, as they are typically designed to operate more efficiently with factors data rather than character data. Additionally, this encoding enhances the overall performance and interpretability of the data.
+We encoded categorical values, including those within columns with character types, and simultaneously removed irrelevant attributes like **student id**. This approach aligns with the optimization of machine learning algorithms, as they are typically designed to operate more efficiently with factors data rather than character data. Additionally, this encoding enhances the overall performance and interpretability of the data.
 
 ### Feature selection and dimensionality reduction:
 
@@ -68,21 +67,22 @@ We encoded categorical values, including those within columns with character typ
     - diagnosis and treatment of anxiety
     - Empworth score
     - sleepiness.
-- Categorical values were encoded, and unnecessary characteristics like student IDs were deleted.
+- Categorical values were encoded, and unnecessary characteristics like _student IDs_ were deleted.
   
-Continually:
+**Continually:**
 
 - Realigned objects and recalculated cluster centers until convergence.
-- K=5 was found to be the ideal number of clusters using the elbow method.
+- K=5 was found to be the ideal number of clusters using the **elbow method**.
 - Close, overlapping clusters were seen when experimenting with various cluster sizes (k=5, k=4, k=3), indicating similarities between the data objects.
 - Across all k values (5, 4, 3), silhouette coefficient values were typically small, and in some cases even negative.
 - Analysis of average precision and recall showed that as the number of clusters dropped, recall increased and precision decreased.
 
-Based on an evaluation that compared the clustering outcomes to the actual results, k=4 was found to have the lowest difference, indicating that it was a better option.
+Based on an evaluation that compared the clustering outcomes to the actual results, **k=4** was found to have the lowest difference, indicating that it was a better option.
 
 ## Classification:
-- Made use of supervised learning strategies with a decision tree algorithm as the main focus.
-- Objective: Predict the depression class label using two options: TRUE and FALSE.
+##### Main points:
+- Made use of supervised learning strategies with a **decision tree algorithm** as the main focus.
+- Objective: Predict the depression class label using two options: _TRUE_ or _FALSE_.
 - A variety of data types were taken into consideration including:
     - Age
     - Gender
@@ -99,10 +99,10 @@ Based on an evaluation that compared the clustering outcomes to the actual resul
     - sleepiness.
 
 Split the dataset into: 
-- Training and Testing sets with three distinct sizes (10, 7, and 5) using the Cross-validation method.
-- Created nine trees by applying the three attribute selection techniques:
+- Training and Testing sets with _three_ distinct sizes (10, 7, and 5) using the **Cross-validation method**.
+- Created _nine_ trees by applying the three attribute selection techniques:
 1. Gain ratio
 2. Gini index
 3. Information gain
 
-With an accuracy of 90.95%, the third tree with k=5 and a gain ratio was found to be the most successful model. We also emphasized how this model correctly classified the majority of tuples.
+With an accuracy of 90.95%, the **third tree with k=5** and a gain ratio was found to be the most successful model. We also emphasized how this model correctly classified the majority of tuples.
