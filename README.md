@@ -35,6 +35,7 @@ To address these issues, our project aims to explore trends, patterns, and facto
 The codes in this section are designed to help you find the missing values in the dataset. Our analysis shows that several attributes in our dataset do, in fact, contain missing values or NULLS.
 
 ### Central tendency measures:
+In order to understand the distribution and central values of the important variables in our dataset, we used measures of central tendency in this section. We tried to determine the typical or central value that our data points typically cluster around by using metrics like mean, median, and mode. These metrics help identify patterns and tendencies by offering insightful details about the main trends found in our dataset.
 
 ### Graph visualization:
 
