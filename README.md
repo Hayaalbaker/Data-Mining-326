@@ -20,6 +20,8 @@ Students who struggle with depression and anxiety have psychological difficultie
 ## Goals: 
 To address these issues, our project aims to explore trends, patterns, and factors to predict the likelihood and severity of depression among university students. Our dataset includes information on school year, depressiveness, anxiousness, and sleepiness, offering valuable insights. Students who struggle with depression and anxiety have psychological difficulties related to their academic work, their studies, and their interactions with peers and professors. Both social conduct and academic performance may suffer as a result of these difficulties. 
 
+-------------------------------------------------------------------------
+
 ## Summary
 
 ### Initial Actions:
