@@ -1,10 +1,6 @@
 # Data-Mining-326
-
-Depression and anxiety, both mentally and physically draining, are prevalent mental illnesses. While some signs and symptoms may be apparent, others may go unnoticed. In fact, depressive symptoms can manifest in various ways, leading individuals to be unaware that their thoughts and feelings are increasingly dominated by depression. This lack of awareness may inadvertently delay receiving necessary treatment, increasing the risk of engaging in risky behaviors such as substance abuse. Additionally, depression can strain relationships, impede recovery from serious illnesses, and create difficulties in the workplace. 
-
-Students experiencing depression and anxiety often struggle with academic tasks, studying, and interpersonal relationships with peers and teachers. These psychological challenges have a detrimental effect on both academic performance and social behavior. Thus, our project aims to explore trends, patterns, and factors to predict the likelihood and severity of depression among university students.  Our class label will be the probability that indicates whether university student is likely to develop depression or not.
-
 -------------------------------------------------------------------------
+
 ### Group Members:
 
 **Leader:** Sara  Alzayed | 443203107
@@ -14,3 +10,24 @@ Haya Albaker  |  443202868
 Sarah Alsaleh  |  443201066
 
 Marya Asaad  |  443200794
+
+-------------------------------------------------------------------------
+
+## Introduction: 
+Our study intends to determine the high rate of depression and anxiety among college students, given their notable negative impact on social interactions and academic performance. Physical and mental exhaustion are common signs of anxiety and depression, but these symptoms are usually minor and may go unrecognized, leaving sufferers unaware of their increasing control over their thoughts and feelings. This misinformation raises the possibility of unintentionally delaying crucial therapy, which raises the risk of engaging in risky behaviors like substance abuse.
+
+Students who struggle with depression and anxiety have psychological difficulties related to their academic work, their studies, and their interactions with peers and professors. Both social conduct and academic performance may suffer as a result of these difficulties. 
+
+## Goals: 
+To address these issues, our project aims to explore trends, patterns, and factors to predict the likelihood and severity of depression among university students. Our dataset includes information on school year, depressiveness, anxiousness, and sleepiness, offering valuable insights. Students who struggle with depression and anxiety have psychological difficulties related to their academic work, their studies, and their interactions with peers and professors. Both social conduct and academic performance may suffer as a result of these difficulties. 
+
+-------------------------------------------------------------------------
+
+## Summary
+
+### Initial Actions
+1. Describe the task of data mining.
+2. Examine and read the dataset.                   
+3. Preserve the original dataset
+4. Explain the properties and dataset.
+5. Display a dataset sample.
