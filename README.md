@@ -38,6 +38,7 @@ The codes in this section are designed to help you find the missing values in th
 In order to understand the distribution and central values of the important variables in our dataset, we used measures of central tendency in this section. We tried to determine the typical or central value that our data points typically cluster around by using metrics like mean, median, and mode. These metrics help identify patterns and tendencies by offering insightful details about the main trends found in our dataset.
 
 ### Graph visualization:
+We used scatter plots as a visualization tool in the graphs to evaluate the variable distribution. To be more precise, we used the **BMI** in combination with the **PHQ score, GAD score, and EPWORTH score** to see how each attribute's distribution varied. The comprehensive view offered by the scatter plots indicates that there is no significant correlation or proportionality between these attributes.
 
 ### Concept hierarchy generation for nominal data:
 
