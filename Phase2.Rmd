@@ -29,8 +29,40 @@ We want to use statistical techniques to seek trends that can predict any early 
 
 We're clustering students together based on their similarities to create distinct clusters. Various methods will be utilized to determine the number of clusters that best suit our dataset, followed by evaluation techniques to assess the effectiveness of these clusters in segmenting the data effectively based on their inherent features.
 
-## Data
 
+## Dataset Details:
+
+**Source of the dataset:** Kaggle
+
+**Dataset Link:** https://www.kaggle.com/datasets/shahzadahmad0402/depression-and-anxiety-data?resource=download
+
+**Number of Attributes:** 19
+
+**Number of Objects:** 783
+
+### Table :
+
+| **Attribute Name**  | **Description**             | **Data Type**       | **Possible Values**                               |
+|---------------------|-----------------------------|---------------------|----------------------------------------------------|
+|ID                   |student id                   |Nominal              |3 values                                            |
+|school_year          |student current year         |Ordinal              |1-4                                                 |
+|Age                  |student age                  |Numeric              |18-24                                               |
+|Gender               |student gender               |Binary               |female/male                                         |
+|BMI                  |body mass index              |Numerical            |9-50                                                |
+|who_bmi              |bmi classification           |Nominal              |Underweight/Normal/Overweight/Obese                 |
+|PHQ Score            |Patient Health Questionnaire |Ordinal              |0-27                                                |
+|depression_severity  |severity of depression       |Nominal              |Mild/Moderate/Moderately Severe/Severe/None-Minimal |
+|depressiveness       |depressiveness               |Binary               |TRUE/FALSE                                          |
+|Suicidal             |likely to commit suicide     |Binary               |TRUE/FALSE                                          |  
+|depression_diagnosis |depression diagnosis         |Binary               |TRUE/FALSE                                          |
+|depression_treatment |treating depression          |Binary               |TRUE/FALSE                                          |
+|GAD Score            |Generalized Anxiety Disorder |Ordinal              |0-<15                                               |
+|anxiety_severity     |severity of anxiety          |Nominal              |Mild/Moderate/Moderately Severe/Severe/None-Minimal |
+|anxiousness          |anxiousness                  |Binary               |TRUE/FALSE                                          |
+|anxiety_diagnosis    |anxiety diagnosis            |Binary               |TRUE/FALSE                                          |
+|anxiety_treatment    |treating of anxiety          |Binary               |TRUE/FALSE                                          |
+|EPWORTH Score        |The Epworth Sleepiness Scale |ordinal              |0-15                                                |
+|Sleepiness           |state of being sleepy        |Binary               |TRUE/FALSE                                          |
 
 
 
