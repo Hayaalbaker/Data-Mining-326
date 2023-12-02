@@ -52,8 +52,8 @@ We encoded categorical values, including those within columns with character typ
 
 ### Normalization:
 
-### Clustering:
-# Main points:
+## Clustering:
+##### Main points:
 - K-means algorithm-based unsupervised learning techniques were utilized.
 - The "depressiveness" attribute was left out of the clustering analysis.
 - A variety of data types were taken into consideration including:
