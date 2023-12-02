@@ -41,7 +41,7 @@ In order to understand the distribution and central values of the important vari
 
 ### Concept hierarchy generation for nominal data:
 
-### Encoding categorical data  
+### Encoding categorical data:
 We encoded categorical values, including those within columns with character types, and simultaneously removed irrelevant attributes like **student id**. This approach aligns with the optimization of machine learning algorithms, as they are typically designed to operate more efficiently with factors data rather than character data. Additionally, this encoding enhances the overall performance and interpretability of the data.
 
 ### Feature selection and dimensionality reduction:
