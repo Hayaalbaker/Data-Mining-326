@@ -1069,7 +1069,8 @@ Gini index:
 
 
 
-########## Clustering ################
+
+######## Clustering  ########
 
 ```{r}
 # include the libraries and import the dataset 
@@ -1091,7 +1092,7 @@ head(df,10)
 str(df)
 ```
 
-# let's  prepocess the data before applay clustering as well as kmeans deal only with numeric we need to convert factor and chr to numeric value, like labels encoding 
+# let's prepocess the data before applay clustering as well as kmeans deal only with numeric we need to convert factor and chr to numeric value, like labels encoding
 
 ```{r}
 # using label encoder
@@ -1194,7 +1195,9 @@ target <- data.frame(depressiveness = df$depressiveness)
 predictors <- df[, -c(1,9)]
 head(predictors)
 ```
+
 # Define a function to compute BCubed precision and recall
+
 ```{r}
 
 bcubed <- function(cluster, category) {
@@ -1228,7 +1231,7 @@ bcubed <- function(cluster, category) {
 
 ##### determining k
 
-#####  Elbow method
+##### Elbow method
 
 This method determines the number of clusters according to the turning point in a curve, the curve is plotted using the total within-cluster sum of square (WSS) as in y-axis , and No. clusters in x-axis
 
@@ -1239,7 +1242,8 @@ fviz_nbclust(df, kmeans, method = "wss") +
   labs(subtitle = "Elbow method")
 
 ```
-k=4
+
+k=4 
 ##### Silhouette method
 
 Now we will apply Silhouette method to find the optimal number of clusters k, we will also plot a graph where x-axis represent the number of clusters and y-axis represent the average Silhouette coefficient
@@ -1248,9 +1252,8 @@ Now we will apply Silhouette method to find the optimal number of clusters k, we
 fviz_nbclust(df, kmeans, method = "silhouette")+
   labs(subtitle = "Silhouette method")
 ```
+
 k=2
-
-
 
 As shown, the number of clusters k that represents the turning point in the curve is 4, so we will use it for clustering.
 
@@ -1270,11 +1273,6 @@ km
 #plot results of k-means 
 fviz_cluster(km, data =predictors )
 ```
-clusters are slightly overlapped
-```{r}
-clusplot(df, km$cluster, color = TRUE, shade = TRUE, labels = 4)
-```
-
 
 ```{r}
 #decrase the cluster by 1 cause on label encoding we start with 0
@@ -1292,7 +1290,6 @@ wss <- km$tot.withinss
 print(wss)
 ```
 
-
 ```{r}
 
 #average silhouette for each clusters
@@ -1300,7 +1297,7 @@ avg_sil <- silhouette(km$cluster,dist(df))
 fviz_silhouette(avg_sil)
 ```
 
-we can conclude from the graph and the results where k=4 is that the performance is worse than k=2 and k=3, because there is a noticeable overlapping between clusters. Also, the clusers' space is pretty wide which results in a large distance between objects in the same cluster. In addition, the recall is relatively low  which might be a result of the overlapping and large distances between data objects. Furthermore, the Precision is high . We can also note that the WSS is the lowest indicating a lower compactness of clusters. Lastly, the average silhouette width is 0.03which is low reflecting high inter-cluster similarity.
+we can conclude from the graph and the results where k=4 is that the performance is worse than k=2 and k=3, because there is a noticeable overlapping between clusters. Also, the clusers' space is pretty wide which results in a large distance between objects in the same cluster. In addition, the recall is relatively low which might be a result of the overlapping and large distances between data objects. Furthermore, the Precision is high . We can also note that the WSS is the lowest indicating a lower compactness of clusters. Lastly, the average silhouette width is 0.03which is low reflecting high inter-cluster similarity.
 
 # Cluster with k=3
 
@@ -1316,18 +1313,11 @@ km
 #plot results of k-means 
 fviz_cluster(km, data = predictors)
 ```
-clusters are more overlapped than k=4
-```{r}
-clusplot(df, km$cluster, color = TRUE, shade = TRUE, labels = 3)
-```
-
-
 
 ```{r}
 #decrase the cluster by 1 cause on label encoding we start with 0
 nc<-km$cluster-1
 ```
-
 
 ```{r}
 # bcubed precision and recall 
@@ -1339,7 +1329,6 @@ bcubed(nc, df$depressiveness)
 wss <- km$tot.withinss
 print(wss)
 ```
-
 
 ```{r}
 
@@ -1364,18 +1353,11 @@ km
 #plot results of k-means 
 fviz_cluster(km, data = predictors)
 ```
-clusters are practically the same 
-```{r}
-clusplot(df, km$cluster, color = TRUE, shade = TRUE, labels = 3)
-```
-
-
 
 ```{r}
 #decrase the cluster by 1 cause on label encoding we start with 0
 nc<-km$cluster-1
 ```
-
 
 ```{r}
 # bcubed precision and recall 
@@ -1388,30 +1370,26 @@ wss <- km$tot.withinss
 print(wss)
 ```
 
-
 ```{r}
 
 #average silhouette for each clusters
 avg_sil <- silhouette(km$cluster,dist(df)) 
 fviz_silhouette(avg_sil)
 ```
-we can conclude from the graph and the results that the k=2 is the optimal k, since there is less overlapping between the two clusters. Also, the recall is relatively high  and is the highest among the k's chosen, the Precision is low (0.28) which could be duo to presence of outliers or sensitivity to Initial Centroid. We can also note that the WSS is 5680, indicating a good compactness of clusters, and that objects in a cluster are similar to one another noting that the higher the k, the lower the WSS. Lastly, the average silhouette width is 0.46 which is considered high reflecting high intra-cluster similarity.
+
+we can conclude from the graph and the results that the k=2 is the optimal k, since there is less overlapping between the two clusters. Also, the recall is relatively high and is the highest among the k's chosen, the Precision is low (0.28) which could be duo to presence of outliers or sensitivity to Initial Centroid. We can also note that the WSS is 5680, indicating a good compactness of clusters, and that objects in a cluster are similar to one another noting that the higher the k, the lower the WSS. Lastly, the average silhouette width is 0.46 which is considered high reflecting high intra-cluster similarity.
 
 ## Clustering results
 
 This table displays the results of clustering using various methods for each K.
 
-+----------------------------------------+-------------------+----------------+-----------------------------+
-|                                        | K=2               | K=3            | K=4                         |
-+:======================================:+:=================:+:==============:+:===========================:+
-| **Average Silhouette width**           | 0.46              | 0.13           | 0.03                         |
-+----------------------------------------+-------------------+----------------+-----------------------------+
-| **total within-cluster sum of square** | 5680.407          | 4825.322       | 4247.212                    |
-+----------------------------------------+-------------------+----------------+-----------------------------+
-| **BCubed precision**                   | 0.5940060         | 0.6421454      | 0.7039766                   |
-+----------------------------------------+-------------------+----------------+-----------------------------+
-| **BCubed recall**                      | 0.5193949         | 0.3959195      | 0.3276772                    |
-+----------------------------------------+-------------------+----------------+-----------------------------
+|                                        |    K=2     |    K=3     |    K=4     | 
+|:-------------:|:-------------:|:-------------:|:-------------:|----|
+|      **Average Silhouette width**      |    0.46    |    0.13    |    0.03    | 
+| **total within-cluster sum of square** |  5680.407  |  4825.322  |  4247.212  | 
+|          **BCubed precision**          | 0.5940060  | 0.6421454  | 0.7039766  | 
+|           **BCubed recall**            | 0.5193949  | 0.3959195  | 0.3276772  | 
+|               **visual**               | ![](2.png) | ![](3.png) | ![](4.png) | 
 
 Based on these metrics, we can assess the performance of each K value:
 
@@ -1419,9 +1397,7 @@ Based on these metrics, we can assess the performance of each K value:
 
 -   Total Within-Cluster Sum of Squares: The lowest value is observed at K = 4 (4247.212), indicating better cluster compactness compared to K= 2 and K = 3.
 
--   BCubed Precision and Recall:  precision highest at K = 4, recall highest at k=2 suggesting a better match between the clustering assignments and the ground truth or desired clustering structure.
-
-
+-   BCubed Precision and Recall: precision highest at K = 4, recall highest at k=2 suggesting a better match between the clustering assignments and the ground truth or desired clustering structure.
 
 
 ## Findings
