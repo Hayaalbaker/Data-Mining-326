@@ -57,18 +57,17 @@ We encoded categorical values, including those within columns with character typ
 - K-means algorithm-based unsupervised learning techniques were utilized.
 - The "depressiveness" attribute was left out of the clustering analysis.
 - A variety of data types were taken into consideration including:
-  1. Age
-  2. Gender
-  3. BMI
-  4. WHO BMI
-  5. PHQ score
-  6. suicidal thoughts
-  7. depression severity
-  8. diagnosis and treatment of depression
-  9. GAD score
-  10. Anxiety severity
-  11. Anxiousness
-  12. diagnosis and treatment of anxiety
-  13. Empworth score
-  14. sleepiness.
+    - Age
+    - Gender
+    - BMI
+    - WHO BMI
+    - PHQ score
+    - depression severity
+    - diagnosis and treatment of depression
+    - GAD score
+    - Anxiety severity
+    - Anxiousness
+    - diagnosis and treatment of anxiety
+    - Empworth score
+    - sleepiness.
 - Categorical values were encoded, and unnecessary characteristics like student IDs were deleted.
