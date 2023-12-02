@@ -65,7 +65,7 @@ We're clustering students together based on their similarities to create distinc
 |Sleepiness           |state of being sleepy        |Binary               |TRUE/FALSE                                          |
 
 
-
+# phase 2
 # Loading dataset
 
 ```{r}
@@ -248,7 +248,7 @@ barplot(bar_heights, names.arg = bar_names, col = c("blue", "red"),
         xlab = "Boolean Values", ylab = "Count",
         main = "class label (depressiveness)")
 ```
-
+# phase 3
 # Building model 
 
 
