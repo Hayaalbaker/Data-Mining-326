@@ -50,8 +50,6 @@ We encoded categorical values, including those within columns with character typ
 
 ### Discretization: 
 
-### Normalization:
-
 ## Clustering:
 ##### Main points:
 - K-means algorithm-based unsupervised learning techniques were utilized.
@@ -101,9 +99,15 @@ Based on an evaluation that compared the clustering outcomes to the actual resul
     - Empworth score
     - sleepiness.
 
-Split the dataset into: 
-- Training and Testing sets with _three_ distinct sizes (10, 7, and 5) using the **Cross-validation method**.
-- Created _nine_ trees by applying the three attribute selection techniques:
+We used **k-fold cross-validation** to divide the data into training and test sets in order to guarantee the dependability and resilience of our classifiers. Three distinct fold sizes—10, 7, and 5—were used for this.  
+  
+The following metrics were used to evaluate each method's performance:
+1. Accuracy: The proportion of test set tuples with the correct classification
+2. Precision, also called exactness: the proportion of tuples that are labeled as positive that are in fact positive.
+3. The percentage of true positive cases that were accurately identified is called sensitivity, sometimes referred to as recall.
+4. Specificity: The percentage of real negative cases that were appropriately recognized.
+
+We created _nine_ trees by applying the three attribute selection techniques:
 1. Gain ratio
 2. Gini index
 3. Information gain
